@@ -12,7 +12,7 @@
                                 David Lindell,
 								Gordon Wetzstein">
 
-    <title>Shelving, Stacking, Hanging: Relational Pose Diffusion for Multimodal Rearrangement</title>
+    <title>Shelving, Stacking, Hanging: Relational Pose Diffusion for Multi-modal Rearrangement</title>
     <!-- Bootstrap core CSS -->
     <!--link href="bootstrap.min.css" rel="stylesheet"-->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
@@ -20,29 +20,31 @@
 
     <!-- Custom styles for this template -->
     <link href="offcanvas.css" rel="stylesheet">
-    <!--    <link rel="icon" href="img/favicon.gif" type="image/gif">-->
 </head>
 
 <body>
 <div class="jumbotron jumbotron-fluid">
     <div class="container"></div>
-    <h2>Shelving, Stacking, Hanging: Relational Pose</br> Diffusion for Multimodal Rearrangement</h2>
+    <h2>Shelving, Stacking, Hanging: Relational Pose</br> Diffusion for Multi-modal Rearrangement</h2>
     <h3>arXiv 2023</h3>
-<!--            <p class="abstract">An interpretable, data-efficient, and scalable neural scene representation.</p>-->
     <hr>
     <p class="authors">
         <a href="https://anthonysimeonov.github.io/"> Anthony Simeonov</a>,
         <a href="https://imankgoyal.github.io/"> Ankit Goyal*</a>,
         <a href="http://lucasmanuelli.com/"> Lucas Manuelli*</a>,
-        <a href="https://yenchenlin.me/"> Lin, Yen-Chen</a>,</br>
+        <a href="https://yenchenlin.me/"> Lin Yen-Chen</a>,</br>
         <a href="https://www.linkedin.com/in/alina-sarmiento/"> Alina Sarmiento</a>,
         <a href="https://meche.mit.edu/people/faculty/ALBERTOR@MIT.EDU"> Alberto Rodriguez</a>,
         <a href="http://people.csail.mit.edu/pulkitag/"> Pulkit Agrawal**</a>,
-        <a href="https://homes.cs.washington.edu/~fox/"> Dieter Fox**</a>
+        <a href="https://homes.cs.washington.edu/~fox/"> Dieter Fox**</a></br>
+        Massachusetts Institute of Technology, NVIDIA Research</br>
+    </p>
+    <p>
+        *Equal contribution, **Equal advising </br>Work done in part during NVIDIA Research internship
     </p>
     <div class="btn-group" role="group" aria-label="Top menu">
-        <a class="btn btn-primary" href="https://arxiv.org/abs/2006.09661">Paper</a>
-        <a class="btn btn-primary" href="https://github.com/anthonysimeonov/rpdiff">Code</a>
+        <a class="btn btn-primary" href="https://anthonysimeonov.github.io/rpdiff-multi-modal">Paper</a>
+        <a class="btn btn-primary" href="https://anthonysimeonov.github.io/rpdiff-multi-modal">Code</a>
     </div>
 </div>
 
@@ -55,398 +57,289 @@
         </div>
         <hr>
         <p>
-            Implicitly defined, continuous, differentiable signal representations parameterized
-            by neural networks have emerged as a powerful paradigm, offering many possible
-            benefits over conventional representations.
-
-            However, current network architectures
-            for such implicit neural representations are incapable of modeling signals
-            with fine detail, and fail to represent a signal’s spatial and temporal derivatives,
-            despite the fact that these are essential to many physical signals defined implicitly
-            as the solution to partial differential equations.
-
-            We propose to leverage periodic
-            activation functions for implicit neural representations and demonstrate that these
-            networks, dubbed sinusoidal representation networks or SIREN, are ideally suited
-            for representing complex natural signals and their derivatives.
-
-            We analyze SIREN
-            activation statistics to propose a principled initialization scheme and demonstrate
-            the representation of images, wavefields, video, sound, and their derivatives. Further,
-            we show how SIREN s can be leveraged to solve challenging boundary value
-            problems, such as particular Eikonal equations (yielding signed distance functions),
-            the Poisson equation, and the Helmholtz and wave equations. Lastly, we combine
-            SIREN with hypernetworks to learn priors over the space of SIREN functions.
+            We propose a system for rearranging objects in a scene to achieve a desired object-scene placing relationship, 
+            such as a book inserted in an open slot of a bookshelf. The pipeline generalizes to novel geometries, poses, 
+            and layouts of both scenes and objects, and is trained from demonstrations to operate directly on 3D point clouds. 
+            
+            Our system overcomes challenges associated with the existence of many geometrically-similar rearrangement solutions 
+            for a given scene. By leveraging an iterative pose de-noising training procedure, we can fit multi-modal demonstration 
+            data and produce multi-modal outputs while remaining precise and accurate. We also show the advantages of conditioning 
+            on relevant local geometric features while ignoring irrelevant global structure that harms both generalization and 
+            precision. 
+            
+            We demonstrate our approach on three distinct rearrangement tasks that require handling multi-modality and 
+            generalization over object shape and pose in both simulation and the real world.
         </p>
     </div>
 
     <div class="section">
-        <h2>Baselines</h2>
+        <h2>Test-time Inference via Iterative Pose De-noising</h2>
         <hr>
         <p>
-            The following results compare SIREN to a variety of network architectures. <b>TanH</b>, <b>ReLU</b>,
-            <b>Softplus</b> etc. means an MLP of equal size with the respective nonlinearity.
-            We also compare to the recently proposed positional encoding, combined with a ReLU nonlinearity, noted as
-            <b>ReLU P.E.</b>
-            SIREN outperforms all baselines by a significant margin, converges significantly faster, and is the only
-            architecture that accurately represents the gradients of the signal, enabling its use to solve boundary
-            value problems.
+            Iterative pose de-noising for unseen simulated objects at test-time. Starting from diverse initial 
+            guess configurations of the objects relative to the scene, the inference process converges to a
+            diverse set of final output rearrangement solutions.
         </p>
-    </div>
-
-    <div class="section">
-        <h2>Representing images</h2>
-        <hr>
-        <p>
-            A Siren that maps 2D pixel coordinates to a color may be used to parameterize images. Here, we supervise Siren
-            directly with ground-truth pixel values. Siren not only fits the image with a 10 dB higher PSNR and in significantly
-            fewer iterations than all baseline architectures, but is also the only MLP that accurately represents the first-
-            and second order derivatives of the image.
-        </p>
-        <div class="row align-items-center">
-            <div class="col justify-content-center text-center">
+        <h3>Book/Bookshelf</h3>
+        <div class="row justify-content-center">
+            <div class="col-md-4">
                 <video width="100%" playsinline="" autoplay="" loop="" preload="" muted="">
-                    <source src="img/image_convergence_15s_label.mp4" type="video/mp4">
+                    <source src="img/bookshelf_miscviz_k5_2_c.mp4" type="video/mp4">
                 </video>
             </div> 
-        </div>
-        <div class="row align-items-center">
-			<div class="col justify-content-center text-center">
-                <video width="40%" playsinline="" autoplay="" loop="" preload="" muted="">
-                    <source src="img/psnr_image_convergence_15s.mp4" type="video/mp4">
-                </video>
-            </div> 
-        </div>
-    </div>
-
-    <div class="section">
-        <h2>Representing Audio</h2>
-        <hr>
-        <p>
-            A Siren with a single, time-coordinate input and scalar output may parameterize audio signals. Siren is the
-            only network architecture that succeeds in reproducing the audio signal, both for music and human voice.
-        </p>
-        <div class="row justify-content-left">
-            <div class="col-sm-3">
-                <h5>Ground truth</h5>
-                <img src="img/audio/gt_bach.png" style="width:100%">
-                <audio
-                        controls
-                        src="img/audio/gt_bach.wav"
-                        class="media-left"
-                        style="width:100%">
-                    Your browser does not support the
-                    <code>audio</code> element.
-                </audio>
-            </div>
-            <div class="col-sm-3">
-                <h5>ReLU MLP</h5>
-                <img src="img/audio/relu_bach.png" style="width:100%">
-                <audio
-                        controls
-                        src="img/audio/relu_bach.wav"
-                        class="media-left"
-                        style="width:100%">
-                    Your browser does not support the
-                    <code>audio</code> element.
-                </audio>
-            </div>
-            <div class="col-sm-3">
-                <h5>ReLU w/ Pos. Enc.</h5>
-                <img src="img/audio/relu_pe_bach.png" style="width:100%">
-                <audio
-                        controls
-                        src="img/audio/relu_pe_bach.wav"
-                        class="media-left"
-                        style="width:100%">
-                    Your browser does not support the
-                    <code>audio</code> element.
-                </audio>
-            </div>
-            <div class="col-sm-3">
-                <h5>Siren</h5>
-                <img src="img/audio/siren_bach.png" style="width:100%">
-                <audio
-                        controls
-                        src="img/audio/siren_bach.wav"
-                        class="media-left"
-                        style="width:100%">
-                    Your browser does not support the
-                    <code>audio</code> element.
-                </audio>
-            </div>
-
-            <div class="row justify-content-left">
-                <div class="col-sm-3">
-<!--                    <h5>Ground truth</h5>-->
-                    <img src="img/audio/gt_counting.png" style="width:100%">
-                    <audio
-                            controls
-                            src="img/audio/gt_counting.wav"
-                            class="media-left"
-                            style="width:100%">
-                        Your browser does not support the
-                        <code>audio</code> element.
-                    </audio>
-                </div>
-                <div class="col-sm-3">
-<!--                    <h5>ReLU MLP</h5>-->
-                    <img src="img/audio/relu_counting.png" style="width:100%">
-                    <audio
-                            controls
-                            src="img/audio/relu_counting.wav"
-                            class="media-left"
-                            style="width:100%">
-                        Your browser does not support the
-                        <code>audio</code> element.
-                    </audio>
-                </div>
-                <div class="col-sm-3">
-<!--                    <h5>ReLU P.E.</h5>-->
-                    <img src="img/audio/relu_pe_counting.png" style="width:100%">
-                    <audio
-                            controls
-                            src="img/audio/relu_pe_counting.wav"
-                            class="media-left"
-                            style="width:100%">
-                        Your browser does not support the
-                        <code>audio</code> element.
-                    </audio>
-                </div>
-                <div class="col-sm-3">
-<!--                    <h5>Siren</h5>-->
-                    <img src="img/audio/siren_counting.png" style="width:100%">
-                    <audio
-                            controls
-                            src="img/audio/siren_counting.wav"
-                            class="media-left"
-                            style="width:100%">
-                        Your browser does not support the
-                        <code>audio</code> element.
-                    </audio>
-                </div>
-        </div>
-    </div>
-
-    <div class="section">
-        <h2>Representing Video</h2>
-        <hr>
-        <p>
-            A Siren with pixel coordinates together with a time coordinate can be used to parameterize a video.
-            Here, Siren is directly supervised with the ground-truth pixel values, and parameterizes video significantly
-            better than a ReLU MLP.
-        </p>
-        <div class="row align-items-center">
-            <div class="col justify-content-center text-center">
-                <video width="50%" playsinline="" autoplay="" loop="" preload="" muted="">
-                    <source src="img/cat_comparison_label.mp4" type="video/mp4">
-                </video>
-            </div>
-            <div class="col justify-content-center text-center">
+            <div class="col-md-4">
                 <video width="100%" playsinline="" autoplay="" loop="" preload="" muted="">
-                    <source src="img/bikes_comparison_label.mp4" type="video/mp4">
+                    <source src="img/bookshelf_miscviz_k5_3_c.mp4" type="video/mp4">
                 </video>
-            </div>
-        </div>
-    </div>
-
-    <div class="section">
-        <h2>Solving the Poisson Equation</h2>
-        <hr>
-        <p>
-            By supervising only the derivatives of Siren, we can solve <a href="https://en.wikipedia.org/wiki/Poisson%27s_equation">Poisson's equation</a>.
-            Siren is again the only architecture that fits image, gradient, and laplacian domains accurately and swiftly.
-        </p>
-         <div class="row align-items-center">
-            <div class="col justify-content-center text-center">
+            </div> 
+            <div class="col-md-4">
                 <video width="100%" playsinline="" autoplay="" loop="" preload="" muted="">
-                    <source src="img/poisson_convergence_15s_label.mp4" type="video/mp4">
+                    <source src="img/bookshelf_miscviz_k5_4_c.mp4" type="video/mp4">
                 </video>
             </div> 
-        </div>
+        </div> 
+
+        <h3>Mug/Rack-multi</h3>
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <video width="100%" playsinline="" autoplay="" loop="" preload="" muted="">
+                    <source src="img/mugrack_miscviz_k5_2_c.mp4" type="video/mp4">
+                </video>
+            </div> 
+            <div class="col-md-4">
+                <video width="100%" playsinline="" autoplay="" loop="" preload="" muted="">
+                    <source src="img/mugrack_miscviz_k5_3_c.mp4" type="video/mp4">
+                </video>
+            </div> 
+            <div class="col-md-4">
+                <video width="100%" playsinline="" autoplay="" loop="" preload="" muted="">
+                    <source src="img/mugrack_miscviz_k5_1_c.mp4" type="video/mp4">
+                </video>
+            </div> 
+        </div> 
+
+        <h3>Can/Cabinet</h3>
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <video width="100%" playsinline="" autoplay="" loop="" preload="" muted="">
+                    <source src="img/cancabinet_miscviz_k5_2_c.mp4" type="video/mp4">
+                </video>
+            </div> 
+            <div class="col-md-4">
+                <video width="100%" playsinline="" autoplay="" loop="" preload="" muted="">
+                    <source src="img/cancabinet_miscviz_k5_3_c.mp4" type="video/mp4">
+                </video>
+            </div> 
+            <div class="col-md-4">
+                <video width="100%" playsinline="" autoplay="" loop="" preload="" muted="">
+                    <source src="img/cancabinet_miscviz_k5_1_c.mp4" type="video/mp4">
+                </video>
+            </div> 
+        </div> 
+    </div>
+
+    <div class="section">
+        <h2>Real-world Multi-modal Rearrangement via Pick-and-Place</h2>
+        <hr>
+        <p>
+            Rearrangement in the real world using the Franka Panda arm. Each task features scene 
+            objects that offer multiple placement locations. RPDiff is used to produce a set of 
+            candidate placements and one of the predicted solutions is executed. Multiple 
+            executions in sequence show the ability to find multiple diverse solutions. Our 
+            neural network is trained in simulation and directly deployed in the real world 
+            (we do observe some performance gap due to sim2real distribution shift). 
+        </p>
+        <!-- <h3>Book/Bookshelf</h3> -->
         <div class="row align-items-center">
-			<div class="col justify-content-center text-center">
-                <video width="40%" playsinline="" autoplay="" loop="" preload="" muted="">
-                    <source src="img/psnr_poisson_convergence_15s.mp4" type="video/mp4">
+            <div class="col justify-content-center text-center">
+                <h3>Book/Bookshelf</h3>
+                <video width="60%" playsinline="" autoplay="" loop="" preload="" muted="">
+                    <source src="img/book_bookshelf_seq1_8x_rdc_lout.mp4" type="video/mp4">
+                </video>
+            </div> 
+        </div>
+
+        <!-- <h3>Mug/Rack-multi</h3> -->
+        <div class="row align-items-center">
+            <div class="col justify-content-center text-center">
+                <h3>Mug/Rack-multi</h3>
+                <video width="60%" playsinline="" autoplay="" loop="" preload="" muted="">
+                    <source src="img/mug_rack_multi_seq1_8x_lout.mp4" type="video/mp4">
+                </video>
+            </div> 
+        </div>
+
+        <!-- <h3>Can/Cabinet</h3> -->
+        <div class="row align-items-center">
+            <div class="col justify-content-center text-center">
+                <h3>Can/Cabinet</h3>
+                <video width="60%" playsinline="" autoplay="" loop="" preload="" muted="">
+                    <source src="img/can_cabinet_seq1_10x_lout.mp4" type="video/mp4">
                 </video>
             </div> 
         </div>
     </div>
 
     <div class="section">
-        <h2>Representing shapes by solving the Eikonal equation<br>
-            Interactive 3D SDF Viewer - Use Your Mouse to Navigate the Scenes</h2>
+        <h2>Training by perturbing object-scene point clouds and predicting corrective SE(3) transforms</h2>
         <hr>
         <p>
-            We can recover an SDF from a pointcloud and surface normals by solving the <a
-                href="https://www.google.com/search?client=ubuntu&channel=fs&q=eikonal+equation&ie=utf-8&oe=utf-8">Eikonal
-            equation</a>,
-            a first-order boundary value problem. SIREN can recover a room-scale scene given only its pointcloud
-            and surface normals, accurately reproducing fine detail, in less than an hour of training.
-            In contrast to recent work on combining voxel grids with neural implicit representations,
-            this stores the full scene in the weights of a single, 5-layer neural network, with no 2D or 3D
-            convolutions, and orders of magnitude fewer parameters. Zoom in to compare fine detail!
-            <b>Note that these SDFs are not supervised with ground-truth SDF / occupancy values, but rather, are the
-            result of solving the above Eikonal boundary value problem. This is a significantly harder task,
-            which requires supervision in the gradient domain (see paper). As a result, architectures whose gradients
-            are not well-behaved perform worse than SIREN.</b>
+            We train on examples of point clouds showing properly configured object-scene pairs, obtained
+            from procedurally generated rearrangement demonstrations on simulated objects. Training 
+            targets are generated by creating object point clouds with sequences of perturbation 
+            transforms applied. The network is trained to take in the noised object-scene point cloud and 
+            predict an SE(3) transform to apply to the object that takes a step back toward the original 
+            configuration. 
+            
+            We crop the scene point cloud to improve generalization and precision by ignoring 
+            faraway details that are irrelevant for prediction and re-use features that describe local 
+            scene geometry across instances and spatial regions. 
         </p>
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-6 padding-0 canvas-row">
-                    <h4>Room - Siren</h4>
-                    <model-viewer
-                            alt="Room Siren"
-                            src="img/room_siren.glb"
-                            style="width: 100%; height:300px; background-color: #404040"
-                            exposure=".8"
-                            camera-orbit="0deg 75deg 105%"
-                            auto-rotate
-                            camera-controls>
-                    </model-viewer>
-                </div>
-                <div class="col-md-6 padding-0 canvas-row">
-                    <h4>Room - ReLU</h4>
-                    <model-viewer
-                            alt="Room ReLU"
-                            src="img/room_relu.glb"
-                            style="width: 100%; height: 300px; background-color: #404040"
-                            exposure=".8"
-                            auto-rotate
-                            camera-controls>
-                    </model-viewer>
-                    <!--                            poster="https://uploads-ssl.webflow.com/51e0d73d83d06baa7a00000f/5e7e6db2d75a9b467eee4111_legomesh_cover.png"-->
-                </div>
-            </div>
-            <div class="row align-items-center">
-                <div class="col-md-4 padding-0 canvas-row">
-                    <h4>Statue - Siren</h4>
-                    <model-viewer
-                            alt="Statue Siren"
-                            src="img/statue_siren.glb"
-                            style="width: 100%; height: 600px; background-color: #404040"
-                            exposure=".8"
-                            camera-orbit="0deg 75deg 20%"
-                            auto-rotate
-                            camera-controls>
-                    </model-viewer>
-                </div>
-                <div class="col-md-4 padding-0 canvas-row">
-                    <h4>Statue - ReLU Pos. Enc.</h4>
-                    <model-viewer
-                            alt="Statue Positional Encoding"
-                            src="img/statue_relu_pe.glb"
-                            style="width: 100%; height: 600px; background-color: #404040"
-                            exposure=".8"
-                            camera-orbit="0deg 75deg 20%"
-                            auto-rotate
-                            camera-controls>
-                    </model-viewer>
-                </div>
-                <div class="col-md-4 padding-0 canvas-row">
-                    <h4>Statue - ReLU</h4>
-                    <model-viewer
-                            alt="Statue ReLU"
-                            src="img/statue_relu.glb"
-                            style="width: 100%; height: 600px; background-color: #404040"
-                            exposure=".8"
-                            camera-orbit="0deg 75deg 20%"
-                            auto-rotate
-                            camera-controls>
-                    </model-viewer>
-                </div>
-            </div>
-        </div>
-
-        <!-- Loads <model-viewer> for modern browsers: -->
-        <script type="module"
-                src="https://unpkg.com/@google/model-viewer/dist/model-viewer.js">
-        </script>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <img src='img/rpdiff-train-img.png' style="width:100%">
+            </div> 
+            <div class="col-md-6">
+                <img src="img/rpdiff-net-img.png" style="width:100%">
+            </div> 
+        </div> 
     </div>
 
     <div class="section">
-        <h2>Solving the Helmholtz equation</h2>
+        <h2>Our Related Projects</h2>
         <hr>
         <p>
-            Here, we use Siren to solve the <a href="https://en.wikipedia.org/wiki/Helmholtz_equation">inhomogeneous Helmholtz equation</a>.
-            ReLU- and Tanh-based architectures fail entirely to converge to a solution.
-        </p>
-        <div class="gif">
-            <video width="100%" playsinline="" autoplay="" loop="" preload="" muted="">
-                <source src="img/helmholtz_convergence_video_pad_label.mp4" type="video/mp4">
-            </video>
-        </div>
-    </div>
-
-    <div class="section">
-        <h2>Solving the wave equation</h2>
-        <hr>
-        <p>
-            In the time domain, Siren succeeds to solve the wave equation, while a Tanh-based architecture fails to discover the
-            correct solution.
-        </p>
-        <video width="100%" playsinline="" autoplay="" loop="" preload="" muted="" class="gif">
-            <source src="img/wave_combined_pad_label.mp4" type="video/mp4">
-        </video>
-    </div>
-
-    <div class="section">
-        <h2>Related Projects</h2>
-        <hr>
-        <p>
-            Check out our related projects on the topic of implicit neural representations! <br>
+            Check out our related projects on the topic of object rearrangement and local scene conditioning <br>
         </p>
         <div class='row vspace-top'>
             <div class="col-sm-3">
-                <video width="100%" playsinline="" autoplay="" loop="" preload="" muted="">
-                    <source src="img/metasdf_steps_comp.mp4" type="video/mp4">
-                </video>
+                <img src='img/related/rndf_bowl_bottle_notext.gif' class='img-fluid'>
             </div>
 
             <div class="col">
                 <div class='paper-title'>
-                    <a href="http://vsitzmann.github.io/metasdf/">MetaSDF: Meta-learning Signed Distance Functions</a>
+                    <a href="http://anthonysimeonov.github.io/r-ndf/">SE(3)-Equivariant Relational Rearrangement with Neural Descriptor Fields</a>
                 </div>
                 <div>
-                    We identify a key relationship between generalization across implicit neural representations and meta-
-                    learning, and propose to leverage gradient-based meta-learning for learning priors over deep signed distance
-                    functions. This allows us to reconstruct SDFs an order of magnitude faster than the auto-decoder framework,
-                    with no loss in performance!
+                    We use neural descriptor fields (NDFs) to represent pairs of objects, label task-relevant local coordinate frames 
+                    and detect correspondencing coordinate frames on unseen instances in arbitrary initial poses. NDFs enable this to work
+                    for novel object instances from just a handful of demonstrations. This enables relational rearrangement with pairs of
+                    unseen objects by aligning the detected frames to each other.
                 </div>
             </div>
         </div>
 
         <div class='row vspace-top'>
             <div class="col-sm-3">
-                <img src='img/SRNs.gif' class='img-fluid'>
+                <img src='img/related/ifor_real_seq_1ed_c.gif' class='img-fluid'>
             </div>
 
             <div class="col">
                 <div class='paper-title'>
-                    <a href="http://vsitzmann.github.io/srns/">Scene Representation Networks: Continuous 3D-Structure-Aware Neural Scene Representations</a>
+                    <a href="https://imankgoyal.github.io/ifor.html">IFOR: Iterative Flow Minimization for Robotic Object Rearrangement</a>
 
                 </div>
                 <div>
-                    A continuous, 3D-structure-aware neural scene representation that encodes both geometry and appearance,
-                    supervised only in 2D via a neural renderer, and generalizes for 3D reconstruction from a single posed 2D image.
+                    An end-to-end method for object rearrangement of unknown objects given an RGBD image of the original and final scenes. 
+                    IFOR first learns an optical flow model to estimate relative object transformations from synthetic data. This flow is then 
+                    used in an iterative minimization algorithm to achieve accurate positioning of previously unseen objects in cluttered scenes, 
+                    and in the real world (while training only on synthetic data). 
                 </div>
             </div>
         </div>
 
         <div class='row vspace-top'>
             <div class="col-sm-3">
-                <img src='img/srn_seg_repimage.jpg' class='img-fluid'>
+                <img src='img/related/lndf_2023.gif' class='img-fluid'>
             </div>
 
             <div class="col">
                 <div class='paper-title'>
-                    <a href="https://www.computationalimaging.org/publications/semantic-srn/">Inferring Semantic Information with 3D Neural Scene Representations
-                    </a>
+                    <a href="https://elchun.github.io/lndf/">Local Neural Descriptor Fields: Locally Conditioned Object Representations for Manipulation</a>
                 </div>
                 <div>
-                    We demonstrate that the features learned by neural implicit scene representations are useful for downstream
-                    tasks, such as semantic segmentation, and propose a model that can learn to perform continuous 3D
-                    semantic segmentation on a class of objects (such as chairs) given only a single, 2D (!) semantic label map!
+                    Local Neural Descriptor Fields (L-NDF), utilizes neural descriptors defined on the local geometry of the object to 
+                    transfer manipulation demonstrations to novel objects at test time. By encoding geometry that is local to a spatial 
+                    region rather than associating with an entire objects, L-NDF performs better with clutter and occlusions, and enables 
+                    interacting with familiar object parts that are attached to unfamiliar objects.  
+                </div>
+            </div>
+        </div>
+
+    <div class="section">
+        <h2>External Related Projects</h2>
+        <hr>
+        <p>
+            Check out other projects related to diffusion models, iterative prediction, and rearrangement<br>
+        </p>
+        <div class='row vspace-top'>
+            <div class="col-sm-3">
+                <img src='img/external/structdiff.png' class='img-fluid'>
+            </div>
+
+            <div class="col">
+                <div class='paper-title'>
+                    <a href="https://structdiffusion.github.io/">StructDiffusion: Language-Guided Creation of Physically-Valid Structures using Unseen Objects</a>
+                </div>
+                <div>
+                    Combines a diffusion model and an object-centric transformer to construct structures given 
+                    partial-view point clouds and high-level language goals, such as "set the table" and "make a line".
+                    Using use one multi-task model, this allows building physically-valid structures without 
+                    step-by-step instructions. 
+                </div>
+            </div>
+        </div>
+
+        <div class='row vspace-top'>
+            <div class="col-sm-3">
+                <img src='img/external/legonet.png' class='img-fluid'>
+            </div>
+
+            <div class="col">
+                <div class='paper-title'>
+                    <a href="https://ivl.cs.brown.edu/#/projects/lego-net">LEGO-Net: Learning Regular Rearrangements of Objects in Rooms</a>
+                </div>
+                <div>
+                    A data-driven transformer-based iterative method for learning reeglar rearrangement of objects 
+                    in messy rooms. Partly inspired by diffusion models, LEGO-Net starts with an initial messy 
+                    state and iteratively denoises the position and orientation of objects to a regular state while 
+                    reducing distance traveled.
+                </div>
+            </div>
+        </div>
+
+        <div class='row vspace-top'>
+            <div class="col-sm-3">
+                <img src='img/external/se3diff2.png' class='img-fluid'>
+            </div>
+
+            <div class="col">
+                <div class='paper-title'>
+                    <a href="https://arxiv.org/abs/2209.03855">SE(3)-DiffusionFields: Learning smooth cost functions for joint grasp and motion optimization through diffusion</a>
+                </div>
+                <div>
+                    A method for learning data-driven SE(3) cost functions as diffusion models, which allows integration 
+                    with other costs into a single differentiable objective function. Specifically focused on learning SE(3) 
+                    diffusion models for 6-DoF grasping, this framework enables joint grasp and motion optimization 
+                    without needing to decouple grasp selection from trajectory generation.
+                </div>
+            </div>
+        </div>
+
+        <div class='row vspace-top'>
+            <div class="col-sm-3">
+                <img src='img/external/indi2.png' class='img-fluid'>
+            </div>
+
+            <div class="col">
+                <div class='paper-title'>
+                    <a href="https://arxiv.org/abs/2303.11435">Inversion by Direct Iteration: An Alternative to Denoising Diffusion for Image Restoration</a>
+                </div>
+                <div>
+                    A formulation for image restoration that avoids the ``regression to the mean'' effect by gradually 
+                    improving image quality, similar to generative denoising diffusion models. Rather 
+                    than predicting in a single step, which can result in an aggregation of all possible restoration 
+                    explanations, InDI instead iteratively improves the image in small steps, resulting in better perceptual quality. 
                 </div>
             </div>
         </div>
@@ -456,7 +349,7 @@
         <hr>
         <div>
             <div class="list-group">
-                <a href="https://arxiv.org/abs/2006.09661"
+                <a href="https://anthonysimeonov.github.io/rpdiff-multi-modal"
                    class="list-group-item">
                     <img src="img/paper_thumbnail.png" style="width:100%; margin-right:-20px; margin-top:-10px;">
                 </a>
@@ -468,16 +361,19 @@
         <h2>Bibtex</h2>
         <hr>
         <div class="bibtexsection">
-            @inproceedings{sitzmann2019siren,
-                author = {Sitzmann, Vincent
-                          and Martel, Julien N.P.
-                          and Bergman, Alexander W.
-                          and Lindell, David B.
-                          and Wetzstein, Gordon},
-                title = {Implicit Neural Representations
-                          with Periodic Activation Functions},
-                booktitle = {Proc. NeurIPS},
-                year={2020}
+            @inproceedings{simeonov2023rpdiff,
+                author = {Simeonov, Anthony
+                          and Goyal, Ankit
+                          and Manuelli, Lucas
+                          and Yen-Chen, Lin
+                          and Sarmiento, Alina,
+                          and Rodriguez, Alberto
+                          and Agrawal, Pulkit
+                          and Fox, Dieter},
+                title = {Shelving, Stacking, Hanging: Relational
+                         Pose Diffusion for Multi-modal Rearrangement},
+                booktitle = {arXiv},
+                year={2023}
             }
         </div>
     </div>
@@ -485,7 +381,7 @@
     <hr>
 
     <footer>
-        <p>Send feedback and questions to <a href="http://web.stanford.edu/~sitzmann/">Vincent Sitzmann</a></p>
+        <p>Send feedback and questions to <a href="https://anthonysimeonov.github.io">Anthony Simeonov</a></p>
     </footer>
 </div>
 
